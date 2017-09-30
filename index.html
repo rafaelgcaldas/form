@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>View</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <style>
+            html {
+                font-family: sans-serif;
+            }
+
+            .card {
+                max-width: 800px;
+                min-width: 600px;
+                background-color: #fff;
+                margin: 80px auto;
+                box-shadow: 2px 2px 8px grey;
+            }
+
+            form {
+                padding: 16px;
+            }
+
+            table {
+                border-collapse: collapse;
+                width: 80%;
+                margin: auto;
+                padding: 20px;
+            }
+
+            table thead {
+                background-color: #eae5e5;
+            }
+
+            table thead tr td {
+                border: 1px solid #dddddd;
+                text-align: center;
+            }
+
+            tr,
+            td {
+                border-left: 1px solid #dddddd;
+                padding: 3px 8px;
+            }
+
+            table tbody tr {
+                border: 1px solid #ccc;
+            }
+
+            .table-wrap {
+                padding: 20px;
+            }
+
+            form div {
+                padding: 3px;
+            }
+
+            form label {
+                margin-left: 8px;
+            }
+
+            .button-wrap {
+                margin: 10px;
+                position: relative;
+                right: -611px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <form>
+                <div>
+                    <label for="">Código:</label>
+                    <input type="text" id="codigo">
+                    <label for="">Nome:</label>
+                    <input type="text" id="nome">
+                    <label for="">Email:</label>
+                    <input type="email" id="email">
+                </div>
+                <div class="button-wrap">
+                    <button type="button" id="salvar">Salvar</button>
+                    <button type="button" id="visualizar">Visualizar</button>
+                </div>
+            </form>
+            <div class="table-wrap" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <td>CÓDIGO</td>
+                            <td>NOME</td>
+                            <td>EMAIL</td>
+                        </tr>
+                        <tbody></tbody>
+                    </thead>
+                </table>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                var user = {
+                    id: "",
+                    nome: "",
+                    email: ""
+                }
+
+                $('#salvar').click(function () {
+                    user.id = $('#codigo').val();
+                    user.nome = $('#nome').val();
+                    user.email = $('#email').val();
+                    var btn = $(this);
+
+                    $.ajax({
+                        type: "POST",
+                        url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                        data: user,
+                        success: function () {
+                            btn.closest('form').siblings('div.table-wrap').find('tbody tr').remove();
+
+                            $.ajax({
+                                url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                                success: function (data) {
+                                    for (var prop in data.usuario) {
+                                        tr = '<tr><td>' + data.usuario[prop].id + '</td>' +
+                                            '<td>' + data.usuario[prop].nome + '</td>' +
+                                            '<td>' + data.usuario[prop].email + '</td></tr>';
+
+                                        btn.closest('form').siblings('div.table-wrap').find('tbody').append(tr);
+                                    }
+                                    btn.closest('form').siblings('div.table-wrap').slideDown(200);
+                                }
+                            });
+                        },
+                        error: function (xhr) {
+                            alert('Erro ao Cadastar!')
+                        }
+                    });
+                    $('input').val('');
+                });
+
+                $('#visualizar').click(function () {
+                    var btn = $(this),
+                        tr = '';
+                    user.id = $('#codigo').val();
+                    btn.closest('form').siblings('div.table-wrap').find('tbody tr').remove();
+
+                    if (user.id == "") {
+                        $.ajax({
+                            url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                            success: function (data) {
+                                if (data.usuario == "") {
+                                    tr = "<tr><td colspan='3' style='text-align: center;'>Nenhum dado encontrado...</td></tr>"
+                                    btn.closest('form').siblings('div.table-wrap').find('tbody').append(tr);
+                                    $('input').val('');
+                                }
+                                for (var prop in data.usuario) {
+                                    tr = '<tr><td>' + data.usuario[prop].id + '</td>' +
+                                        '<td>' + data.usuario[prop].nome + '</td>' +
+                                        '<td>' + data.usuario[prop].email + '</td></tr>';
+
+                                    btn.closest('form').siblings('div.table-wrap').find('tbody').append(tr);
+                                }
+                                btn.closest('form').siblings('div.table-wrap').slideDown(200);
+                            }
+                        });
+                    }
+                    else {
+                        $.ajax({
+                            type: "GET",
+                            url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/user/' + user.id,
+                            success: function (data) {
+                                if (data.usuario == "") {
+                                    tr = "<tr><td colspan='3' style='text-align: center;'>Nenhum dado encontrado...</td></tr>"
+                                    btn.closest('form').siblings('div.table-wrap').find('tbody').append(tr);
+                                }
+                                tr = '<tr><td>' + data.usuario[0].id + '</td>' +
+                                    '<td>' + data.usuario[0].nome + '</td>' +
+                                    '<td>' + data.usuario[0].email + '</td></tr>';
+
+                                btn.closest('form').siblings('div.table-wrap').find('tbody').append(tr);
+                                btn.closest('form').siblings('div.table-wrap').slideDown(200);
+                                $('input').val('');
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>
