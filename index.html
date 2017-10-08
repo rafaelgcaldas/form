@@ -110,13 +110,13 @@
 
                     $.ajax({
                         type: "POST",
-                        url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                        url: 'http://ec2-18-221-182-23.us-east-2.compute.amazonaws.com:3000/api/usuario',
                         data: user,
                         success: function () {
                             btn.closest('form').siblings('div.table-wrap').find('tbody tr').remove();
 
                             $.ajax({
-                                url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                                url: 'http://ec2-18-221-182-23.us-east-2.compute.amazonaws.com:3000/api/usuario',
                                 success: function (data) {
                                     for (var prop in data.usuario) {
                                         tr = '<tr><td>' + data.usuario[prop].id + '</td>' +
@@ -144,7 +144,7 @@
 
                     if (user.id == "") {
                         $.ajax({
-                            url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/usuario',
+                            url: 'http://ec2-18-221-182-23.us-east-2.compute.amazonaws.com:3000/api/usuario',
                             success: function (data) {
                                 if (data.usuario == "") {
                                     tr = "<tr><td colspan='3' style='text-align: center;'>Nenhum dado encontrado...</td></tr>"
@@ -165,7 +165,7 @@
                     else {
                         $.ajax({
                             type: "GET",
-                            url: 'http://ec2-52-14-45-66.us-east-2.compute.amazonaws.com:3000/api/user/' + user.id,
+                            url: 'http://ec2-18-221-182-23.us-east-2.compute.amazonaws.com:3000/api/user/' + user.id,
                             success: function (data) {
                                 if (data.usuario == "") {
                                     tr = "<tr><td colspan='3' style='text-align: center;'>Nenhum dado encontrado...</td></tr>"
